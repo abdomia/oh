@@ -1,18 +1,24 @@
-
 from pathlib import Path
 from rich import print as p
 
-def get_fd(path: Path) -> None:
-    for entrey in path.iterdir():
-        if entrey.is_dir():
-            p(f'[yellow]{entrey}[yellow]')
+def get_fd(path: Path) -> tuple[list[Path], list[Path]]:
+    l_f: list[Path] = []
+    l_d: list[Path] = []
+    for entry in path.iterdir():
+        if entry.is_dir():
+            l_d.append(entry)
         else:
-            print(entrey)
-
+            l_f.append(entry)
+    return (l_f, l_d)
 
 def main() -> None:
     fd = Path('.')
-    get_fd(fd)
+    f, d = get_fd(fd)
+
+    for ds in sorted(d):
+        p(f'[yellow]{str(ds)}/[yellow]')
+    for fs in sorted(f):
+        print(str(fs))
 
 
 if __name__ == "__main__":
