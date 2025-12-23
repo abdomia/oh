@@ -1,25 +1,20 @@
 from pathlib import Path
-from rich import print as p
+import click
 
-def get_fd(path: Path) -> tuple[list[Path], list[Path]]:
-    l_f: list[Path] = []
-    l_d: list[Path] = []
-    for entry in path.iterdir():
-        if entry.is_dir():
-            l_d.append(entry)
+def get_fd(p: Path) -> list[Path]:
+    conts = p.iterdir()
+    return sorted(conts, key=lambda x: x.is_dir(), reverse=True)
+
+@click.command(help="oh is an ls command but with super power")
+@click.argument("path", required=False)
+def oh(path: str):
+    p = path or './'
+    fds = get_fd(Path(p))
+    for item in fds:
+        if item.is_dir():
+            click.echo(click.style(f"{str(item)}/", fg="green"))
         else:
-            l_f.append(entry)
-    return (l_f, l_d)
-
-def main() -> None:
-    fd = Path('.')
-    f, d = get_fd(fd)
-
-    for ds in sorted(d):
-        p(f'[yellow]{str(ds)}/[yellow]')
-    for fs in sorted(f):
-        print(str(fs))
-
+            click.echo(str(item))
 
 if __name__ == "__main__":
-    main()
+    oh()
