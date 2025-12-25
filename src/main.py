@@ -38,6 +38,7 @@ def oh(
 ) -> None:
     for dest in dests:
         if match:
+            # TODO handle the capital case for that impl
             res = search_match(match, Path(dest))
             display_matched(res, match)
         # TODO implement these functions
