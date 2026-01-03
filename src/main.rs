@@ -42,7 +42,7 @@ fn main() {
     let oh = Oh::parse();
     let file = oh.file;
     if let Ok((h, r)) = read_csv(file) {
-        logging_csv(h, r);
+        logging_csv((h, r));
     } else {
         process::exit(1)
     }
