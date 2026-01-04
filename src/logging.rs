@@ -1,10 +1,19 @@
 use csv::StringRecord;
+use tabled::{builder::Builder, settings::Style};
+use std::iter::once;
+
+const LIMIT: usize = 10;
 
 // TODO make kind of detecting the csv file and if it's large csv do operations to print it in terminal
 // csv file with 1000_000 rows then print first 10 rows for example.
-pub fn logging_csv(data: (StringRecord, Vec<StringRecord>)) {
+pub fn log_csv_table(data: (StringRecord, Vec<StringRecord>)) {
     let mut max_each_col = vec![
-        0; data.1.iter().nth(0).unwrap().len()
+        0; data
+            .1
+            .iter()
+            .nth(0)
+            .unwrap()
+            .len()
     ];
 
     for i in 0..max_each_col.len() {
@@ -34,40 +43,47 @@ pub fn logging_csv(data: (StringRecord, Vec<StringRecord>)) {
             .count();
         max_each_col[i] = max_len;
     }
-    // for headers
-    let mut joind_head = "".to_string();
-    for (i, h) in data.0.iter().enumerate() {
-        let dist = max_each_col[i]
-            .abs_diff(h
-                .chars()
-                .count());
 
-        let formated = format!("{}{} | ", h, " ".repeat(dist));
-        joind_head.push_str(&formated);
-    }
-    println!("{}", joind_head);
-    println!("{}", "-".repeat(joind_head.chars().count()));
+    let mut builder = Builder::default();
+    // before building we need to detect how many lines we want to render
+    let lines = data.1.len();
 
-    // for data logging
-    for row_record in data.1.iter() {
-        create_table(&row_record, &max_each_col);
+    let (render_follow, limit_rows): (bool, usize);
+    if lines > LIMIT {
+        limit_rows = LIMIT;
+        render_follow = true;
+    } else {
+        limit_rows = lines;
+        render_follow = false;
     }
+
+    // building the header first
+    builder.push_record(data.0.iter());
+
+    // building then the records
+    for i in 0..limit_rows {
+        let record = data.1.iter()
+            .nth(i)
+            .unwrap();
+        builder.push_record(record.iter())
+    }
+
+    builder.insert_column(0,
+        once(String::new())
+            .chain(
+                (0..limit_rows)
+                    .map(|x| x.to_string())
+            ));
+
+    if render_follow {
+        builder.push_record((0..=data.0.len()).map(|_| {
+            format!("...")
+        }));
+    };
+
+    let mut table = builder.build();
+    table.with(Style::rounded());
+
+    println!("{}", table);
 }
 
-fn create_table(record: &StringRecord, max_each_col: &Vec<usize>) {
-    let mut joind_row = "".to_string();
-    for (i, rcrd) in record.iter().enumerate() {
-        let check = max_each_col[i]
-            .checked_sub(rcrd
-                .chars()
-                .count());
-
-        if let Some(dist) = check {
-            let formated = format!("{}{} | ", rcrd, " ".repeat(dist));
-            joind_row.push_str(&formated);
-        } else {
-            println!("error here while substracting");
-        }
-    }
-    println!("{}", joind_row);
-}

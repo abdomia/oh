@@ -4,7 +4,7 @@ mod reader;
 use reader::read_csv;
 use clap::Parser;
 use std::{ffi::OsString, process};
-use crate::logging::logging_csv;
+use crate::logging::log_csv_table;
 
 #[derive(Debug, Parser)]
 struct Oh {
@@ -21,7 +21,7 @@ fn main() {
     let file = oh.file;
     // TODO make some kind of `error.rs` to handle this situation
     if let Ok((h, r)) = read_csv(file) {
-        logging_csv((h, r));
+        log_csv_table((h, r));
     } else {
         process::exit(1)
     }
