@@ -1,5 +1,7 @@
 use csv::StringRecord;
 
+// TODO make kind of detecting the csv file and if it's large csv do operations to print it in terminal
+// csv file with 1000_000 rows then print first 10 rows for example.
 pub fn logging_csv(data: (StringRecord, Vec<StringRecord>)) {
     let mut max_each_col = vec![
         0; data.1.iter().nth(0).unwrap().len()
@@ -35,9 +37,11 @@ pub fn logging_csv(data: (StringRecord, Vec<StringRecord>)) {
     // for headers
     let mut joind_head = "".to_string();
     for (i, h) in data.0.iter().enumerate() {
-        let size= max_each_col[i];
-        let h_size = h.chars().count();
-        let dist = size.abs_diff(h_size);
+        let dist = max_each_col[i]
+            .abs_diff(h
+                .chars()
+                .count());
+
         let formated = format!("{}{} | ", h, " ".repeat(dist));
         joind_head.push_str(&formated);
     }
@@ -53,7 +57,11 @@ pub fn logging_csv(data: (StringRecord, Vec<StringRecord>)) {
 fn create_table(record: &StringRecord, max_each_col: &Vec<usize>) {
     let mut joind_row = "".to_string();
     for (i, rcrd) in record.iter().enumerate() {
-        let check = max_each_col[i].checked_sub(rcrd.chars().count());
+        let check = max_each_col[i]
+            .checked_sub(rcrd
+                .chars()
+                .count());
+
         if let Some(dist) = check {
             let formated = format!("{}{} | ", rcrd, " ".repeat(dist));
             joind_row.push_str(&formated);
