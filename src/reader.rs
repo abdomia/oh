@@ -24,4 +24,3 @@ pub fn read_csv(file: OsString) -> Result<(StringRecord, Vec<StringRecord>)> {
         Err(e) => Err(Error::new(e))
     };
 }
-
