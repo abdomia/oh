@@ -1,9 +1,9 @@
 use anyhow::{Result, Error};
 use csv::{self, StringRecord};
-use std::ffi::OsString;
+use std::path::PathBuf;
 
-pub fn read_csv(file: OsString) -> Result<(StringRecord, Vec<StringRecord>)> {
-    let r = csv::Reader::from_path(file);
+pub fn read_csv(file: PathBuf) -> Result<(StringRecord, Vec<StringRecord>)> {
+    let r = csv::Reader::from_path(file.into_os_string());
     let mut reader = match r {
         Ok(v) => v,
         Err(e) => return Err(Error::new(e))
