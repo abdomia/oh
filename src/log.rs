@@ -1,30 +1,32 @@
-use csv::StringRecord;
 use tabled::{builder::Builder, settings::Style};
+use clap::{ValueEnum};
 use std::iter::once;
-use crate::RangeSelection;
 
-const LIMIT: usize = 10;
+use crate::{data::data::Data, options::opts::{OhOptions, Points}};
 
-// TODO make a flags and parses them to do the follwoing:
-// 1. make start_rows, end_rows variables debending on the user input to handle filtering options
-pub fn prepare_for_log(
-    row: Option<&StringRecord>,
-    col: Option<&StringRecord>,
-    range: RangeSelection
-) {
-
+#[derive(Debug, Clone)]
+pub struct DataToLog<'a> {
+    data: Data<'a>,
+    oh_option: OhOptions,
 }
 
-pub fn log_csv_table(data: (StringRecord, Vec<StringRecord>)) {
-    let header = data.0;
-    let record = data.1;
+#[derive(ValueEnum, Debug, Clone)]
+pub enum OutputForm {
+    Table, //TODO implment this and then think of the others
+    Json,
+    Yaml
+}
+
+pub fn log_csv_table(data: Data) {
+    let header = data.header;
+    let record = data.rows;
     let mut builder = Builder::default();
 
     // before building we need to detect how many lines we want to render
     let lines = record.len();
     let (render_follow, limit_rows): (bool, usize);
-    if lines > LIMIT {
-        limit_rows = LIMIT;
+    if lines > data.limit {
+        limit_rows = data.limit;
         render_follow = true;
     } else {
         limit_rows = lines;
@@ -58,4 +60,3 @@ pub fn log_csv_table(data: (StringRecord, Vec<StringRecord>)) {
     table.with(Style::rounded());
     println!("{}", table);
 }
-
