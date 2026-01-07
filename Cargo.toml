@@ -6,6 +6,8 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.100"
 clap = { version = "4.5.53", features = ["cargo", "derive", "env", "string"] }
+clippy = "0.0.302"
 csv = "1.4.0"
+rustfmt = "0.10.0"
 serde = "1.0.228"
 tabled = "0.20.0"

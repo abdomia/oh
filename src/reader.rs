@@ -1,26 +1,45 @@
-use anyhow::{Result, Error};
-use csv::{self, StringRecord};
+use csv::Error;
+use csv::StringRecord;
 use std::path::PathBuf;
 
-pub fn read_csv(file: PathBuf) -> Result<(StringRecord, Vec<StringRecord>)> {
-    let r = csv::Reader::from_path(file.into_os_string());
-    let mut reader = match r {
-        Ok(v) => v,
-        Err(e) => return Err(Error::new(e))
-    };
+use crate::cli::oh::Header;
+use crate::cli::oh::Record;
 
-    let mut rows: Vec<StringRecord> = vec![];
-    for vs in reader.records() {
-        if let Ok(v) = vs {
-            rows.push(v);
-        }
-    };
-
-    let headers = reader.headers();
-    return match headers {
-        Ok(h) => {
-            Ok((h.clone(), rows))
-        },
-        Err(e) => Err(Error::new(e))
-    };
+pub struct OhReader {
+    pub file_path: PathBuf,
+    pub source: ReaderSource,
+    // TODO get file from internet..
+    // file_web: PathWeb
 }
+
+pub enum ReaderSource {
+    Disk,
+    Web,
+}
+
+impl OhReader {
+    fn read_csv_from_disk(self) -> Result<(
+        Header, // header
+        Record // rows
+    ), Error> {
+        let r = csv::Reader::from_path(self.file_path.into_os_string());
+        let mut reader = match r {
+            Ok(v) => v,
+            Err(e) => return Err(e)
+        };
+
+        let rows: Record = reader
+            .records()
+            .map(|e| {
+                match e {
+                    Ok(val) => val,
+                    Err(_) => StringRecord::from(vec!["NoData"]),
+                }
+            })
+            .collect();
+
+        let header: Header = reader.headers()?.clone();
+        Ok((header, rows))
+    }
+}
+
