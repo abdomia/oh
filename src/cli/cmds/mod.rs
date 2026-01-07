@@ -1,4 +1,4 @@
 pub mod select;
-pub mod show;
+pub mod get;
 pub mod handler;
 

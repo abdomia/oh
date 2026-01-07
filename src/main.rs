@@ -8,8 +8,7 @@ use crate::cli::oh::Oh;
 
 fn main() {
     Oh::new()
-        .cli()
+        .execute()
         .handle_cmds();
-
 }
 

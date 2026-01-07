@@ -1,25 +1,16 @@
 use tabled::{builder::Builder, settings::Style};
-use clap::ValueEnum;
 use std::iter::once;
 
 use crate::data::data_handler::Data;
-use crate::cli::cmds::handler::OhCommands;
 
-pub struct DataToLog<'a> {
-    pub data: Data<'a>,
-    pub oh_option: OhCommands,
+pub struct DataToLog {
+    pub data: Data,
+    // pub output_opts: OutputForm
 }
 
-#[derive(ValueEnum, Debug, Clone)]
-pub enum OutputForm {
-    Table, // TODO implment this and then think of the others
-    Json,
-    Yaml
-}
-
-impl<'a> DataToLog<'a> {
-    pub fn log_csv_table(&self) {
-        let header = self.data.header;
+impl DataToLog {
+    pub fn log_to_csv_table(&self) {
+        let header = &self.data.header;
         let record = &self.data.rows;
         let mut builder = Builder::default();
 
