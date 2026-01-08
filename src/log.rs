@@ -5,7 +5,6 @@ use crate::data::data_handler::Data;
 
 pub struct DataToLog {
     pub data: Data,
-    // pub output_opts: OutputForm
 }
 
 impl DataToLog {
@@ -55,3 +54,4 @@ impl DataToLog {
         println!("{}", table);
     }
 }
+

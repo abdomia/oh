@@ -1,4 +1,3 @@
-// FIX reverse the FILE Name and SubCommand order......
 mod log;
 mod reader;
 mod cli;

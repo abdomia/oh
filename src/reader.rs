@@ -3,8 +3,8 @@ use std::path::PathBuf;
 use csv::Error;
 use csv::StringRecord;
 
-use crate::cli::oh::Header;
-use crate::cli::oh::Record;
+use crate::data::data_handler::Header;
+use crate::data::data_handler::Record;
 use crate::data::data_handler::Data;
 
 pub struct OhReader {
@@ -25,7 +25,7 @@ impl OhReader {
             .map(|e| {
                 match e {
                     Ok(val) => val,
-                    Err(_) => StringRecord::from(vec!["NoData"]),
+                    Err(_) => StringRecord::from(vec!["None"]),
                 }
             })
             .collect();

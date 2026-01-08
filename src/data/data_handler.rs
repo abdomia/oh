@@ -1,7 +1,9 @@
+use csv::StringRecord;
 use crate::log::DataToLog;
-use crate::cli::oh::Header;
-use crate::cli::oh::Record;
 use crate::cli::cmds::select::OhRange;
+
+pub type Header = StringRecord;
+pub type Record = Vec<StringRecord>;
 
 pub struct Data {
     pub header: Header,
@@ -50,6 +52,5 @@ impl Data {
             None => Err("range not found please specify the range that you want to select!".to_string())
         }
     }
-
 }
 

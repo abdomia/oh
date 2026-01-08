@@ -1,7 +1,7 @@
 use clap::{Subcommand, Args, ValueEnum};
 use std::{ffi::OsString, path::PathBuf};
 
-use crate::{cli::cmds::get::handle_get_cmd, log::DataToLog, reader::{read_from_file_source, ReaderSource}};
+use crate::{cli::cmds::get::handle_get_cmd, reader::{read_from_file_source}};
 
 #[derive(Debug, Clone, ValueEnum)]
 pub enum OutputForm {
@@ -19,7 +19,7 @@ pub enum State {
 #[derive(Debug, Clone, Subcommand)]
 pub enum SelectBy {
     Row {
-        #[arg(long = "index", short = 'i', required = false)]
+        #[arg(long = "indx-row", short = 'i', required = false)]
         index: Option<usize>,
 
         #[arg(long = "range", short = 'r', required = false)]
@@ -27,7 +27,7 @@ pub enum SelectBy {
     },
     #[command(subcommand_required = false)]
     Col {
-        #[arg(long = "index", short = 'i', required = false)]
+        #[arg(long = "index-col", short = 'i', required = false)]
         index: Option<usize>,
 
         #[arg(long = "range", short = 'r', required = false)]
@@ -51,8 +51,12 @@ pub struct FileHandler {
         short = 's'
     )]
     web_file: Option<OsString>,
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct FileOutput {
     #[arg(long = "output", short = 'o', value_enum, default_value="table")]
-    output_form: OutputForm
+    file_format: OutputForm
 }
 
 // TODO implement all of these + custom error messages
@@ -63,12 +67,14 @@ pub enum OhCommands {
         file: FileHandler,
         #[command(subcommand)]
         selection_data: SelectBy,
-        #[arg(long = "output", short = 'o', value_enum, default_value="table")]
-        output_form: OutputForm
+        #[command(flatten)]
+        output_shape: FileOutput,
     },
     Get {
         #[command(flatten)]
         file: FileHandler,
+        #[command(flatten)]
+        output_shape: FileOutput,
     }
 }
 
@@ -77,13 +83,18 @@ impl OhCommands {
         match self {
             OhCommands::Select {
                 ..
-            } => {},
+            } => {
+            },
             OhCommands::Get {
-                file: f
+                file: f,
+                output_shape: out
             } => {
                 let reader = read_from_file_source((f.web_file, f.disk_file));
-                if let Ok(d) = reader {
-                    handle_get_cmd(d);
+                if let Ok(r) = reader {
+                    let handler = handle_get_cmd(r, out.file_format);
+                    if let Ok(h) = handler {
+                        println!("{}", h.1);
+                    }
                 }
             },
         }

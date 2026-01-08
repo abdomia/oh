@@ -1,11 +1,7 @@
 use std::process;
 
 use clap::Parser;
-use csv::StringRecord;
 use crate::cli::cmds::handler::OhCommands;
-
-pub type Header = StringRecord;
-pub type Record = Vec<StringRecord>;
 
 #[derive(Debug, Parser)]
 pub struct Oh {
@@ -28,4 +24,5 @@ impl Oh {
         }
     }
 }
+
 
