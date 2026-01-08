@@ -1,7 +1,7 @@
 use tabled::{builder::Builder, settings::Style};
 use std::iter::once;
 
-use crate::data::data_handler::Data;
+use crate::log::data_handler::Data;
 
 pub struct DataToLog {
     pub data: Data,

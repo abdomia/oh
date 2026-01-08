@@ -1,7 +1,6 @@
-mod log;
 mod reader;
 mod cli;
-mod data;
+mod log;
 
 use crate::cli::oh::Oh;
 

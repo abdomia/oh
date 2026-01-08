@@ -3,15 +3,16 @@ use std::path::PathBuf;
 use csv::Error;
 use csv::StringRecord;
 
-use crate::data::data_handler::Header;
-use crate::data::data_handler::Record;
-use crate::data::data_handler::Data;
+use crate::log::data_handler::Header;
+use crate::log::data_handler::Record;
+use crate::log::data_handler::Data;
 
 pub struct OhReader {
     pub file_path: PathBuf,
     // TODO get file from internet..
     // file_web: PathWeb
 }
+
 impl OhReader {
     pub fn read_csv_file(self) -> Result<Data, Error> {
         let r = csv::Reader::from_path(self.file_path.into_os_string());
@@ -31,22 +32,31 @@ impl OhReader {
             .collect();
 
         let header: Header = reader.headers()?.clone();
-        Ok(Data::new(header, rows))
+        // TODO make Data::new() function to handle this situation.
+        Ok(Data {
+            rows: rows,
+            header: header,
+            limit_to_show: 10
+        })
     }
 }
 
 // TODO Check the destination file here.
-pub fn read_from_file_source(file_source: (Option<OsString>, Option<PathBuf>)) -> Result<OhReader, ()> {
+pub fn web_or_disk_reader(file_source: (Option<OsString>, Option<PathBuf>)) -> Option<Data> {
     match file_source {
         (Some(_url), None) => {
-            Err(()) // error for now
+            None
         },
         (None, Some(file_path)) => {
-            Ok(OhReader {
+            let read = OhReader {
                 file_path: file_path
-            })
+            };
+            return match read.read_csv_file() {
+                Ok(data) => Some(data),
+                Err(_) => None
+            }
         },
-        _ => Err(())
+        _ => None
     }
 }
 
