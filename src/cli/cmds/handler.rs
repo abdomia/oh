@@ -1,26 +1,9 @@
-use clap::{Subcommand, Args, ArgGroup};
+use clap::{Subcommand, Args};
 use std::{ffi::OsString, path::PathBuf};
 
-use crate::cli::cmds::select::{handle_select_cmd, Selectors};
+use crate::cli::cmds::select::{handle_select_cmd, SelectBy};
 use crate::cli::cmds::get::handle_get_cmd;
 use crate::cli::cmds::output::OutputForm;
-
-#[derive(Debug, Clone, Subcommand)]
-pub enum SelectBy {
-    #[command(group(
-        ArgGroup::new("select_variant")
-        .args(["index", "range"])
-        .required(true)
-    ))]
-    Row(Selectors),
-
-    #[command(group(
-        ArgGroup::new("select_variant")
-        .args(["index", "range", "name"])
-        .required(true)
-    ), subcommand_required = false)]
-    Col(Selectors)
-}
 
 #[derive(Debug, Clone, Args)]
 pub struct FileHandler {
@@ -32,19 +15,20 @@ pub struct FileHandler {
         required_unless_present = "disk_file",
         conflicts_with = "disk_file",
         long = "external-data",
-        short = 's'
+        short = 'w'
     )]
     pub web_file: Option<OsString>,
 }
 
 // TODO implement all of these + custom error messages
-#[derive(Debug, Subcommand, Clone)]
+#[derive(Debug, Clone, Subcommand)]
 pub enum OhCommands {
     Select {
         #[command(flatten)]
         file: FileHandler,
-        #[command(subcommand)]
+        #[command(flatten)]
         selection_data: SelectBy,
+        // TODO move the argument output_shape to Oh struct.
         #[arg(long = "output", short = 'o', value_enum, default_value="table")]
         output_shape: OutputForm
     },
