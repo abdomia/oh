@@ -1,11 +1,14 @@
 package main
 
 import (
-	"fmt"
+	"os"
+
+	cmds "github.com/abdomia/oh/src/oh"
 )
 
-
 func main() {
-	fmt.Println("hi")
+	if e := cmds.Oh.Execute(); e != nil {
+		os.Exit(1)
+	}
 }
 
